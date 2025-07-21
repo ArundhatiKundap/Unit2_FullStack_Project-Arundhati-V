@@ -1,0 +1,157 @@
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; /* aligns items to the left */
+    align-items: center;
+    padding: 16px;
+    background-color: transparent;
+    color: red;
+}
+
+/* Container for logo and title */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: transparent
+}
+
+/* Logo image styling */
+.logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+/* Title next to the logo */
+.title {
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.navbar-home {
+    width: fit-content; /* shrink to content */
+    margin-left: auto; /* Push it right */
+    margin-right: 20px;
+    background-color: transparent;
+    overflow: auto;
+    display: flex; /* for horizontal layout */
+}
+
+    .navbar-home a {
+        float: left;
+        padding: 12px;
+        color: darkred;
+        text-decoration: none;
+        font-size: 17px;
+    }
+
+        .navbar-home a:hover {
+            background-color: #000;
+        }
+
+.active {
+    background-color: #04AA6D;
+}
+
+.navbar-login {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-icon {
+    background: none;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    display: none;
+}
+
+.navbar-login:hover .dropdown {
+    display: block;
+}
+
+.dropdown a,
+.dropdown button {
+    margin: 5px 0;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    color: black;
+}
+
+@media screen and (max-width: 900px) {
+    .title {
+        font-size: 36px;
+    }
+
+    .logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    .navbar-home {
+        gap: 5px;
+    }
+
+    .user-menu {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .menu-icon {
+        font-size: 1.2rem;
+    }
+}
+
+
+@media screen and (max-width: 500px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .navbar-home {
+        flex-direction: column;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+        .navbar-home a {
+            display: block;
+            text-align: left;
+            width: 100%;
+        }
+
+    .user-menu {
+        align-self: flex-end;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .dropdown {
+        width: 100%;
+        right: 0;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    }
+}
