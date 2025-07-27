@@ -1,6 +1,8 @@
 package TradeTrail.backend.models;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Trader_Details")
 public class TraderInfo {
@@ -81,4 +83,5 @@ public class TraderInfo {
     public void setRole(String role) {
         this.role = role;
     }
+
 }
