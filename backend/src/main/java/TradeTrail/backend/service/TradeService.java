@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TradeService {
@@ -56,6 +57,43 @@ public class TradeService {
         trade.setTrader(trader);
 
         return tradeRepository.save(trade);
+    }
+    public boolean updateTrade(Long tradeId, TradeDTO tradeDTO) {
+        Trades currentTrade = tradeRepository.findById(tradeId).orElse(null);
+        if (currentTrade != null) {
+            if (tradeDTO.getTradeDate() == null || tradeDTO.getTradeDate().isEmpty()) {
+                throw new IllegalArgumentException("Trade date is missing.");
+            }
+            currentTrade.setTradeDate(LocalDate.parse((tradeDTO.getTradeDate())));
+            currentTrade.setStockName(tradeDTO.getStockName());
+            currentTrade.setEntryPrice(tradeDTO.getEntryPrice());
+            currentTrade.setExitPrice(tradeDTO.getExitPrice());
+            currentTrade.setTradeType(tradeDTO.getTradeType());
+            currentTrade.setQuantity(tradeDTO.getQuantity());
+            currentTrade.setInstrument(tradeDTO.getInstrument());
+            // Profit/Loss Calculation
+            double profitLoss = calculateProfitLoss(
+                    tradeDTO.getEntryPrice(),
+                    tradeDTO.getExitPrice(),
+                    tradeDTO.getQuantity(),
+                    tradeDTO.getTradeType()
+            );
+
+            currentTrade.setProfitLoss(profitLoss);
+            currentTrade.setWin(profitLoss > 0);
+
+            tradeRepository.save(currentTrade);
+            return true;
+        }
+        return false;
+    }
+    public boolean deleteTrade(Long tradeId) {
+        Trades currentTrade = tradeRepository.findById(tradeId).orElse(null);
+        if (currentTrade != null) {
+            tradeRepository.deleteById(tradeId);
+            return true;
+        }
+        return false;
     }
     private double calculateProfitLoss(double entryPrice, double exitPrice, int quantity, String tradeType) {
 

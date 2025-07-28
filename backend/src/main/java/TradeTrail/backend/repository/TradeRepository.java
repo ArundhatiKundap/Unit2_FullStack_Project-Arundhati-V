@@ -11,6 +11,5 @@ import java.util.List;
 public interface TradeRepository extends JpaRepository<Trades, Long> {
     List<Trades> findByTrader(TraderInfo trader);
 
-
 }
 

@@ -44,5 +44,24 @@ public class TradeController {
         Trades savedTrade = tradeService.saveTrade(tradeDTO, traderId);
         return ResponseEntity.ok(savedTrade);
     }
+
+    @PutMapping("/{traderId}")
+    public ResponseEntity<String> updateTrade(@PathVariable (value="traderId") Long traderId, @RequestBody TradeDTO tradeDTO) {
+        boolean updated = tradeService.updateTrade(traderId, tradeDTO);
+        if (updated) {
+            return ResponseEntity.ok("Trade updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trade not found");
+        }
+    }
+    @DeleteMapping("/{traderId}")
+    public ResponseEntity<String> deleteTrade(@PathVariable (value="traderId") Long traderId) {
+        boolean deleted = tradeService.deleteTrade(traderId);
+        if (deleted) {
+            return ResponseEntity.ok("Trade deleted successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trade not found");
+        }
+    }
 }
 

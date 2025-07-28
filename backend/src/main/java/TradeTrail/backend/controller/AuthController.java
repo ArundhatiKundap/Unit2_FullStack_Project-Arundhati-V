@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.servlet.function.ServerResponse.badRequest;
@@ -28,7 +30,7 @@ import static org.springframework.web.servlet.function.ServerResponse.status;
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
-    private TraderRepository repo;
+    private TraderRepository traderRepository;
     @Autowired private PasswordEncoder encoder;
     @Autowired private AuthenticationManager authManager;
     @Autowired private JwtUtil jwtUtil;
@@ -39,7 +41,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Passwords do not match");
         }
 
-        if (repo.findByEmail(dto.getEmail()).isPresent()) {
+        if (traderRepository.findByEmail(dto.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
 
@@ -49,7 +51,7 @@ public class AuthController {
         t.setPassword(encoder.encode(dto.getPassword()));
         t.setPremium(dto.isPremium());
         t.setRole(dto.isPremium() ? "ROLE_PREMIUM" : "ROLE_USER");
-        repo.save(t);
+        traderRepository.save(t);
         return ok("Registered");
     }
 
@@ -60,7 +62,17 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
             UserDetails ud = (UserDetails) auth.getPrincipal();
             String token = jwtUtil.genToken(ud);
-            return ok(Map.of("token", token));
+            Optional<TraderInfo> user = traderRepository.findByEmail(dto.getEmail());
+            TraderInfo trader = user.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "user", Map.of(
+                            "name", trader.getName(),
+                            "email", trader.getEmail(),
+                            "isPremium", trader.isPremium(),
+                            "role", trader.getRole()
+                    )
+            ));
         } catch (BadCredentialsException ex) {
             return (ResponseEntity<?>) status(401).body("Invalid credentials");
         }
