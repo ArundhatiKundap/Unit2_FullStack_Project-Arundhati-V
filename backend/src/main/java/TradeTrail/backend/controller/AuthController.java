@@ -14,20 +14,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.servlet.function.ServerResponse.badRequest;
 import static org.springframework.web.servlet.function.ServerResponse.status;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
     private TraderRepository traderRepository;
@@ -37,7 +34,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegistrationDTO dto) {
-        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+
+        if (!Objects.equals(dto.getPassword(), dto.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Passwords do not match");
         }
 
