@@ -1,0 +1,76 @@
+
+
+.animation-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    
+}
+
+.animator-class {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+   
+}
+
+    .animator-class h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: lawngreen;
+    }
+
+    .animator-class h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-top: 0;
+        color: red;
+    }
+
+img {
+    height: 255px;
+    width: 100%;
+    max-width: 400px;
+    display: block;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+    @media screen and (max-width: 768px) {
+        .animation-container {
+            padding: 20px;
+            height: auto;
+        }
+
+        .animator-class h1 {
+            font-size: 2rem;
+        }
+
+        .animator-class h2 {
+            font-size: 1.4rem;
+        }
+
+        img {
+            height: 200px;
+            max-width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .animator-class h1 {
+            font-size: 1.6rem;
+        }
+
+        .animator-class h2 {
+            font-size: 1.2rem;
+        }
+
+        img {
+            height: 160px;
+        }
+    }
