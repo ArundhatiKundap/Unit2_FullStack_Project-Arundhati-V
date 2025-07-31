@@ -15,6 +15,9 @@ export default function SearchTrades({ trades }) {
     const [selectedStock, setSelectedStock] = useState({ value: '', label: '' });
     const [filterWin, setFilterWin] = useState(true);
     const [filterLoss, setFilterLoss] = useState(true);
+    const [selectedType, setSelectedType] = useState(""); // "Buy", "Sell", or ""
+    const [filterBuy, setFilterBuy] = useState(true);
+    const [filterSell, setFilterSell] = useState(true);
 
     const stockOptions = [...new Set(trades.map(trade => trade.stockName))].map(stock => ({
         value: stock,
@@ -27,9 +30,9 @@ export default function SearchTrades({ trades }) {
             selectedStock.value ? trade.stockName === selectedStock.value : true
         )
         .filter(trade => {
-            if (filterWin && filterLoss) return true;
-            if (filterWin) return trade.win === true;
-            if (filterLoss) return trade.win === false;
+            if (filterBuy && filterSell) return true;
+            if (filterBuy) return trade.tradeType === "Buy";
+            if (filterSell) return trade.tradeType === "Sell";
             return true;
         });
 
@@ -42,8 +45,8 @@ export default function SearchTrades({ trades }) {
         0
     );
 
-    const winCount = filteredTrades.filter(trade => trade.win).length;
-    const lossCount = filteredTrades.filter(trade => !trade.win).length;
+    const winCount = filteredTrades.filter(trade => trade.profitLoss > 0).length;
+    const lossCount = filteredTrades.filter(trade => trade.profitLoss < 0).length;
     const total = winCount + lossCount;
 
     const winPercentage = total ? Math.round((winCount / total) * 100) : 0;
@@ -100,16 +103,16 @@ export default function SearchTrades({ trades }) {
                     <label>
                         <input
                             type="checkbox"
-                            checked={filterWin}
-                            onChange={(e) => setFilterWin(e.target.checked)}
-                        /> Win
+                            checked={filterBuy}
+                            onChange={(e) => setFilterBuy(e.target.checked)}
+                        /> Buy
                     </label>
                     <label style={{ marginLeft: "10px" }}>
                         <input
                             type="checkbox"
-                            checked={filterLoss}
-                            onChange={(e) => setFilterLoss(e.target.checked)}
-                        /> Loss
+                            checked={filterSell}
+                            onChange={(e) => setFilterSell(e.target.checked)}
+                        /> Sell
                     </label>
                 </div>
             </div>
@@ -128,7 +131,7 @@ export default function SearchTrades({ trades }) {
                         <tbody>
                             {filteredTrades.map((trade, idx) => (
                                 <tr key={idx}>
-                                    <td>{trade.date}</td>
+                                    <td>{trade.tradeDate}</td>
                                     <td>{trade.stockName}</td>
                                     <td>{trade.tradeType}</td>
                                     <td>{trade.profitLoss}</td>

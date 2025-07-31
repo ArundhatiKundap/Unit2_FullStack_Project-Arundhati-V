@@ -21,11 +21,23 @@ export default function ShowTrades({ userEmail, onEdit, onDelete, refreshKey, on
     useEffect(() => {
         const fetchTrades = async () => {
             try {
-                const res = await fetch("https://unit1-project-tradetrail.onrender.com/trades");
+                const token = localStorage.getItem("token"); 
+                const res = await fetch("http://localhost:8080/api/trades", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+              
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
                 const data = await res.json();
-                const userTrades = data.filter(trade => trade.userEmail === userEmail)
-                                      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                const userTrades = data.sort((a, b) => new Date(b.tradeDate) - new Date(a.tradeDate));
+
                 setTrades(userTrades);
+
                 if (onTradesFetched) {
                     onTradesFetched(userTrades); // Send data back to Dashboard
                 }
@@ -41,7 +53,7 @@ export default function ShowTrades({ userEmail, onEdit, onDelete, refreshKey, on
     const [popupMessage, setPopupMessage] = useState('');
 
     const chartData = {
-        labels: trades.map(trade => trade.date),
+        labels: trades.map(trade => trade.tradeDate),
         datasets: [
             {
                 label: 'Net Daily P&L',
@@ -95,14 +107,14 @@ export default function ShowTrades({ userEmail, onEdit, onDelete, refreshKey, on
                     <tbody>
                         {trades.map((trade, index) => (
                             <tr key={index}>
-                                <td>{trade.date}</td>
+                                <td>{trade.tradeDate}</td>
                                 <td>{trade.stockName}</td>
                                 <td>{trade.tradeType}</td>
                                 <td>{trade.entryPrice}</td>
                                 <td>{trade.exitPrice}</td>
                                 <td>{trade.quantity}</td>
                                 <td>{trade.profitLoss}</td>
-                                <td>{trade.win ? 'Win' : 'Loss'}</td>
+                                <td>{trade.profitLoss >0 ? 'Win' : 'Loss'}</td>
                                 <td>
                                     <button onClick={() => onEdit(trade)}>Edit</button>
                                     <button onClick={() => onDelete(trade.id)}>Delete</button>

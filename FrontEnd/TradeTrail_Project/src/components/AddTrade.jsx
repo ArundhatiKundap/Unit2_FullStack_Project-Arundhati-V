@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import '../styles/dashboard.css';
 import PopupWindow from "./PopupWindow";
-export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) {
+export default function Addtrade({selectedTrade, onSubmitSuccess }) {
 
     useEffect(() => {
         if (selectedTrade) {
             setFormData({
                 ...selectedTrade,
-                date: selectedTrade.date?.slice(0, 10), // trim timestamp
+                //date: selectedTrade.date?.slice(0, 10), // trim timestamp
+                date: selectedTrade.tradeDate
+                    ? new Date(selectedTrade.tradeDate).toISOString().slice(0, 10)
+                    : "",
             });
         } else {
             resetForm(); // or set empty formData
@@ -24,16 +27,14 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
         stockName: "",
         tradeType: "Buy",
         date: "",
-        entryPrice: null,
-        exitPrice: null,
-        quantity: null,
-        profitLoss: null,
-        win: ""
+        entryPrice: "",
+        exitPrice: "",
+        quantity: ""
 
     });
 
     const [popupVisible, setPopupVisible] = useState(false);    //for pop up alert
-    const [popupMessage, setPopupMessage] = useState('');
+    const [popupMessage, setPopupMessage] = useState("");
     
     
     const handleChange = (e) => {
@@ -46,95 +47,61 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
         }));
     };
 
-    const isWinningTrade = () => {
-        const { entryPrice, exitPrice, tradeType } = formData;
-        if (entryPrice == null || exitPrice == null) return null;
-
-        if (tradeType.toLowerCase() === "buy") {
-            return exitPrice > entryPrice;
-        } else if (tradeType.toLowerCase() === "sell") {
-            return entryPrice > exitPrice;
-        }
-        return null;
-    };
-
-    const calculateProfitLoss = () => {
-        const { entryPrice, exitPrice, quantity, tradeType } = formData;
-        if (entryPrice == null || exitPrice == null || quantity == null) return 0;
-        let profitloss;
-
-        if (tradeType.toLowerCase() === "sell") {
-            profitloss = (entryPrice - exitPrice) * quantity;
-        } else if (tradeType.toLowerCase() === "buy") {
-            profitloss = (exitPrice - entryPrice) * quantity;
-        } else {
-            profitloss = null;
-        }
-        const isWin = isWinningTrade();
-
-        return isWin ? Math.abs(profitloss) : -Math.abs(profitloss);
-        
-        
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newErrors = validateForm(formData);
         setErrors(newErrors);
        
-        const winResult = isWinningTrade();
-        const profitLossResult = calculateProfitLoss();
-        const date = String(formData.date);
-       
         const tradeData = {
-            ...formData,
-            date,
-            profitLoss: profitLossResult,
-            win: winResult,
-            userEmail,
+            ...(selectedTrade && { id: selectedTrade.id }), // only adds `id` if selectedTrade exists
+            tradeDate: formData.date,
+            stockName: formData.stockName,
+            entryPrice: parseFloat(formData.entryPrice),
+            exitPrice: parseFloat(formData.exitPrice),
+            tradeType: formData.tradeType,
+            quantity: parseInt(formData.quantity),
+            instrument: formData.instrument,
         };
 
-
-        if (Object.keys(newErrors).length === 0) {
+        if (Object.keys(errors).length === 0) {
             try {
+                const token = localStorage.getItem("token");
+                
                 const method = selectedTrade ? "PUT" : "POST";
                 const url = selectedTrade
-                    ? `https://unit1-project-tradetrail.onrender.com/trades/${selectedTrade.id}`
-                    : "https://unit1-project-tradetrail.onrender.com/trades";
+                    ? `http://localhost:8080/api/trades/${selectedTrade.id}`
+                    : `http://localhost:8080/api/trades/add`;
                 const addrecord = await fetch(url, {
                     method: method,
                     headers: {
                         "Content-Type": "application/json",
-                    },
+                        "Authorization": `Bearer ${token}`,
+                    }, 
                     body: JSON.stringify(tradeData),
                 });
-                if (addrecord.ok) {
-                    setPopupMessage(selectedTrade ? "Trade Updated Successfully!" :"Trade Added Successfully"); 
-                    setPopupVisible(true); 
-                    resetForm();
-                    setShowForm(true);
-                    onSubmitSuccess();
-                    
+
+                if (!addrecord.ok) {
+                    throw new Error("Failed to save trade");
                 }
-                else {
-                    setPopupMessage("Failed to save trade");
-                    
-                }
+
+                 setPopupMessage(selectedTrade ? "Trade Updated Successfully!" :"Trade Added Successfully");  
+                 resetForm();
+                 setShowForm(true);              
+                 onSubmitSuccess(); 
+                setPopupVisible(true);
+                setTimeout(() => setPopupVisible(false), 3000);
+
             } catch (err) {
                 setPopupMessage("Error saving trade:", err);
-               
+                setPopupVisible(true);
+                setTimeout(() => setPopupVisible(false), 3000);
             }
         }
         else {
             setPopupMessage("Please fill all fields")
-            
-        }
-        setPopupVisible(true);
-
-        // Auto-close after 3 seconds (optional)
-        setTimeout(() => {
-            setPopupVisible(false);
-        }, 3000);
+            setPopupVisible(true);
+            setTimeout(() => setPopupVisible(false), 3000);
+        }     
         
     };
 
@@ -145,24 +112,13 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
             stockName: "",
             tradeType: "Buy",
             date: "",
-            entryPrice: null,
-            exitPrice: null,
-            quantity: null,
-            profitLoss: null,
-            win: ""
+            entryPrice: "",
+            exitPrice: "",
+            quantity: ""
         });
     };
-    const winLossText =
-        formData.entryPrice > 0 &&
-            formData.exitPrice > 0 &&
-            formData.quantity > 0
-            ? isWinningTrade()
-                ? "Win"
-                : "Loss"
-            : "";
-    
- 
-    const date = String(formData.date);
+      
+    const date = formData.date;
 
     const validateForm = (data) => {
         const errors = {};
@@ -171,8 +127,8 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
             errors.stockName = 'StockName is required';
         } 
 
-        if (!data.date) {
-            errors.date = 'Date is required';
+        if (!data.tradeDate) {
+            errors.tradeDate = 'Date is required';
         } 
 
         if (!data.entryPrice) {
@@ -208,7 +164,8 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
                             name="instrument"
                             value={formData.instrument}
                             onChange={handleChange}
-                            maxLength={30}
+                                maxLength={30}
+                                readOnly
                         />
                         </div>
                         <div className="input-group">
@@ -228,14 +185,14 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
                                 {errors.stockName}
                             </span>
                         )}
-                        <div class="input-group">
+                        <div className="input-group">
                         <label>
                             <strong>Date</strong>
                         </label>
                         <input
                             type="date"
-                            name="date"
-                            value={date}
+                                name="date"
+                                value={date}
                             onChange={handleChange}
                             maxLength={30}
                             />
@@ -326,32 +283,6 @@ export default function Addtrade({ userEmail, selectedTrade, onSubmitSuccess }) 
                             </span>
                         )}
                     </div>
-                    <div className="stockprice-info">
-                        <div class="input-group">
-                        <label>
-                            <strong>Profit/Loss</strong>
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="profitLoss"
-                                value={calculateProfitLoss().toFixed(2)}
-                                readOnly
-                                disabled
-                            />
-                        </div>
-                        <div className="input-group">
-                        <label><strong>Win/Loss</strong></label>
-                        <input
-                            type="text"
-                            name="win"
-                            value={winLossText}
-                               
-                                readOnly
-                                disabled
-                            />
-                          </div>
-                        </div>
 
                         <div className="button-group">
                         <button type="submit" className="btn-submit" > {selectedTrade ? "Update Trade" : "Add Trade"}</button>

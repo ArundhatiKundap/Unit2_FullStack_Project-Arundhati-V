@@ -49,10 +49,13 @@ export default function Dashboard() {
     const handleDeleteTrade = async (id) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this trade?");
         if (!confirmDelete) return;
-
+        const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`https://unit1-project-tradetrail.onrender.com/trades/${id}`, {
+            const response = await fetch(`http://localhost:8080/api/trades/${id}`, {
                 method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
             });
 
             if (!response.ok) {
@@ -60,12 +63,11 @@ export default function Dashboard() {
             }
 
             setPopupMessage("Trade deleted successfully.");
-            setPopupVisible(true); 
+            setPopupVisible(true);
             setFormKey((prev) => prev + 1); // Refresh trade list
         } catch (error) {
-            
             setPopupMessage("There was an error deleting the trade.");
-            setPopupVisible(true); 
+            setPopupVisible(true);
         }
     };
 

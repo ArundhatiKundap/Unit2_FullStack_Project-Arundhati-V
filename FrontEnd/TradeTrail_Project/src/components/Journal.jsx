@@ -33,7 +33,7 @@ export default function Journal({ trades }) {
          
 
         const filteredTrades = trades.filter(
-            (trade) => formatDate(trade.date) === formatDate(selectedDate)
+            (trade) => formatDate(trade.tradeDate) === formatDate(selectedDate)
          );
         const totalProfitLoss = filteredTrades.reduce(
             (sum, trade) => sum + Number(trade.profitLoss),
@@ -99,7 +99,7 @@ export default function Journal({ trades }) {
                     <tbody>
                         {filteredTrades.map((trade, index) => (
                             <tr key={index}>
-                                <td>{trade.date}</td>
+                                <td>{trade.tradeDate}</td>
                                 <td>{trade.stockName}</td>
                                 <td>{trade.tradeType}</td>
                                 <td>{trade.entryPrice}</td>
