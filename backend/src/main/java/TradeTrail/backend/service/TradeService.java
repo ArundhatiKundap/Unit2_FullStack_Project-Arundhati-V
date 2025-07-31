@@ -7,10 +7,9 @@ import TradeTrail.backend.repository.TradeRepository;
 import TradeTrail.backend.repository.TraderRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TradeService {
@@ -23,18 +22,34 @@ public class TradeService {
     }
 
 
-    public List<Trades> getTradesByUserEmail(String email) {
+    public List<TradeDTO> getTradesByUserEmail(String email) {
         TraderInfo trader = traderRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return tradeRepository.findByTrader(trader);
+        List<Trades> trades =  tradeRepository.findByTrader(trader);
+        return trades.stream().map(trade -> {
+            TradeDTO dto = new TradeDTO();
+            dto.setId(trade.getId());
+            dto.setTradeType(trade.getTradeType());
+            dto.setTradeDate(trade.getTradeDate().toString());;
+            dto.setEntryPrice(trade.getEntryPrice());
+            dto.setExitPrice(trade.getExitPrice());
+            dto.setProfitLoss(trade.getProfitLoss());
+            dto.setQuantity(trade.getQuantity());
+            dto.setStockName(trade.getStockName());
+            dto.setInstrument(trade.getInstrument());
+            dto.setTraderId((long) trade.getTrader().getId());
+            return dto;
+        }).collect(Collectors.toList());
+
     }
-    public Trades saveTrade(TradeDTO tradeDTO, Long traderId) {
+    public Trades saveTrade(TradeDTO tradeDTO, String email) {
         Trades trade = new Trades();
+        System.out.println(tradeDTO.getTradeDate());
         if (tradeDTO.getTradeDate() == null || tradeDTO.getTradeDate().isEmpty()) {
             throw new IllegalArgumentException("Trade date is missing.");
         }
-        trade.setTradeDate(LocalDate.parse((tradeDTO.getTradeDate())));
+        trade.setTradeDate(tradeDTO.getTradeDate().toString());
         trade.setStockName(tradeDTO.getStockName());
         trade.setEntryPrice(tradeDTO.getEntryPrice());
         trade.setExitPrice(tradeDTO.getExitPrice());
@@ -52,7 +67,7 @@ public class TradeService {
         trade.setProfitLoss(profitLoss);
         trade.setWin(profitLoss > 0);
         // Associate trader
-        TraderInfo trader = traderRepository.findById(traderId)
+        TraderInfo trader = traderRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Trader not found"));
         trade.setTrader(trader);
 
@@ -64,7 +79,7 @@ public class TradeService {
             if (tradeDTO.getTradeDate() == null || tradeDTO.getTradeDate().isEmpty()) {
                 throw new IllegalArgumentException("Trade date is missing.");
             }
-            currentTrade.setTradeDate(LocalDate.parse((tradeDTO.getTradeDate())));
+            currentTrade.setTradeDate(tradeDTO.getTradeDate().toString());
             currentTrade.setStockName(tradeDTO.getStockName());
             currentTrade.setEntryPrice(tradeDTO.getEntryPrice());
             currentTrade.setExitPrice(tradeDTO.getExitPrice());

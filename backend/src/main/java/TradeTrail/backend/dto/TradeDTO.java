@@ -20,6 +20,9 @@ public class TradeDTO {
     @NotNull
     private double exitPrice;
 
+    @NotNull
+    private double profitLoss;
+
     @NotBlank(message = "Trade type is required")
     private String tradeType;
 
@@ -49,6 +52,7 @@ public class TradeDTO {
     }
 
     public String getStockName(){
+
         return stockName;
     }
 
@@ -75,7 +79,6 @@ public class TradeDTO {
         public String getTradeType () {
             return tradeType;
         }
-
         public void setTradeType (String tradeType){
             this.tradeType = tradeType;
         }
@@ -83,7 +86,12 @@ public class TradeDTO {
         public int getQuantity () {
             return quantity;
         }
-
+        public Double getProfitLoss () {
+           return profitLoss;
+        }
+        public void setProfitLoss(double profitLoss) {
+            this.profitLoss = profitLoss;
+         }
         public void setQuantity (int quantity){
             this.quantity = quantity;
         }
@@ -99,5 +107,7 @@ public class TradeDTO {
         public void setTraderId (Long traderId){
           this.traderId = traderId;
     }
+
+
 
 }

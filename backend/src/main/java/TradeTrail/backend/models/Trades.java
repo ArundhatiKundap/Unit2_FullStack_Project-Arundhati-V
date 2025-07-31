@@ -15,7 +15,7 @@ public class Trades {
     private String instrument;
     private Double entryPrice;
     private Double exitPrice;
-    private LocalDate tradeDate;
+    private String tradeDate;;
     private String tradeType;
     private int quantity;
     private double profitLoss;
@@ -65,11 +65,11 @@ public class Trades {
         this.exitPrice = exitPrice;
     }
 
-    public LocalDate getTradeDate() {
+    public String getTradeDate() {
         return tradeDate;
     }
 
-    public void setTradeDate(LocalDate tradeDate) {
+    public void setTradeDate(String tradeDate) {
         this.tradeDate = tradeDate;
     }
 
