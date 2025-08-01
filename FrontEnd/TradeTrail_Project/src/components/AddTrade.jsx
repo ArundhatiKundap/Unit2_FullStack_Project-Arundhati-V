@@ -3,23 +3,12 @@ import '../styles/dashboard.css';
 import PopupWindow from "./PopupWindow";
 export default function Addtrade({selectedTrade, onSubmitSuccess }) {
 
-    useEffect(() => {
-        if (selectedTrade) {
-            setFormData({
-                ...selectedTrade,
-                //date: selectedTrade.date?.slice(0, 10), // trim timestamp
-                date: selectedTrade.tradeDate
-                    ? new Date(selectedTrade.tradeDate).toISOString().slice(0, 10)
-                    : "",
-            });
-        } else {
-            resetForm(); // or set empty formData
-        }
-    }, [selectedTrade]);
 
     const [showForm, setShowForm] = useState(true);
 
     const [errors, setErrors] = useState({});
+    const [popupVisible, setPopupVisible] = useState(false);    //for pop up alert
+    const [popupMessage, setPopupMessage] = useState("");
 
     const [formData, setFormData] = useState({
         instrument: "Stock",
@@ -33,79 +22,100 @@ export default function Addtrade({selectedTrade, onSubmitSuccess }) {
 
     });
 
-    const [popupVisible, setPopupVisible] = useState(false);    //for pop up alert
-    const [popupMessage, setPopupMessage] = useState("");
-    
+
+    useEffect(() => {
+        if (selectedTrade) {
+            setFormData({
+                instrument: selectedTrade.instrument || "Stock",
+                tradeSpan: selectedTrade.tradeSpan || "Intraday",
+                stockName: selectedTrade.stockName || "",
+                tradeType: selectedTrade.tradeType || "Buy",
+                date: selectedTrade.tradeDate
+                    ? new Date(selectedTrade.tradeDate).toISOString().slice(0, 10)
+                    : "",
+                entryPrice: selectedTrade.entryPrice?.toString() || "",
+                exitPrice: selectedTrade.exitPrice?.toString() || "",
+                quantity: selectedTrade.quantity?.toString() || ""
+            });
+        } else {
+            resetForm();
+        }
+    }, [selectedTrade]);
     
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        const val = type === "checkbox" ? checked : value;
-
-        setFormData((prev) => ({
+        const { name, value } = e.target;
+        setFormData(prev => ({
             ...prev,
-            [name]: val,
+            [name]: value
         }));
+    };
+
+    const validateForm = (data) => {
+        const newErrors = {};
+
+        if (!data.stockName.trim()) newErrors.stockName = "Stock name is required";
+        if (!data.date) newErrors.date = "Date is required";
+        if (!data.entryPrice) newErrors.entryPrice = "Enter entry price";
+        if (!data.exitPrice) newErrors.exitPrice = "Enter exit price";
+        if (!data.quantity) newErrors.quantity = "Enter quantity";
+
+        return newErrors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const newErrors = validateForm(formData);
         setErrors(newErrors);
-       
+
+        if (Object.keys(newErrors).length > 0) {
+            setPopupMessage("Please fill all required fields.");
+            setPopupVisible(true);            
+            return;
+        }
+
         const tradeData = {
-            ...(selectedTrade && { id: selectedTrade.id }), // only adds `id` if selectedTrade exists
+            ...(selectedTrade && { id: selectedTrade.id }),
             tradeDate: formData.date,
             stockName: formData.stockName,
             entryPrice: parseFloat(formData.entryPrice),
             exitPrice: parseFloat(formData.exitPrice),
             tradeType: formData.tradeType,
             quantity: parseInt(formData.quantity),
-            instrument: formData.instrument,
+            instrument: formData.instrument
         };
 
-        if (Object.keys(errors).length === 0) {
-            try {
-                const token = localStorage.getItem("token");
-                
-                const method = selectedTrade ? "PUT" : "POST";
-                const url = selectedTrade
-                    ? `http://localhost:8080/api/trades/${selectedTrade.id}`
-                    : `http://localhost:8080/api/trades/add`;
-                const addrecord = await fetch(url, {
-                    method: method,
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    }, 
-                    body: JSON.stringify(tradeData),
-                });
+        try {
+            const token = localStorage.getItem("token");
+            const method = selectedTrade ? "PUT" : "POST";
+            const url = selectedTrade
+                ? `http://localhost:8080/api/trades/${selectedTrade.id}`
+                : `http://localhost:8080/api/trades/add`;
 
-                if (!addrecord.ok) {
-                    throw new Error("Failed to save trade");
-                }
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(tradeData),
+            });
 
-                 setPopupMessage(selectedTrade ? "Trade Updated Successfully!" :"Trade Added Successfully");  
-                 resetForm();
-                 setShowForm(true);              
-                 onSubmitSuccess(); 
-                setPopupVisible(true);
-                setTimeout(() => setPopupVisible(false), 3000);
+            if (!response.ok) throw new Error("Failed to save trade");
 
-            } catch (err) {
-                setPopupMessage("Error saving trade:", err);
-                setPopupVisible(true);
-                setTimeout(() => setPopupVisible(false), 3000);
-            }
-        }
-        else {
-            setPopupMessage("Please fill all fields")
+            setPopupMessage(selectedTrade ? "Trade Updated Successfully!" : "Trade Added Successfully");
             setPopupVisible(true);
-            setTimeout(() => setPopupVisible(false), 3000);
-        }     
-        
-    };
+            resetForm();
+            setShowForm(true);
+            onSubmitSuccess();
 
-    const resetForm = () => {
+        } catch (err) {
+            setPopupMessage("Error saving trade: " + err.message);
+            setPopupVisible(true);
+        } 
+    };
+    
+    const resetForm = () => {      
         setFormData({
             instrument: "Stock",
             tradeSpan: "Intraday",
@@ -116,194 +126,116 @@ export default function Addtrade({selectedTrade, onSubmitSuccess }) {
             exitPrice: "",
             quantity: ""
         });
+        setErrors({});
     };
       
-    const date = formData.date;
-
-    const validateForm = (data) => {
-        const errors = {};
-
-        if (!data.stockName.trim()) {
-            errors.stockName = 'StockName is required';
-        } 
-
-        if (!data.tradeDate) {
-            errors.tradeDate = 'Date is required';
-        } 
-
-        if (!data.entryPrice) {
-            errors.entryPrice = 'Enter Entry price';
-        }
-        if (!data.exitPrice) {
-            errors.exitPrice = 'Enter Exit price';
-        } 
-
-        if (!data.quantity) {
-            errors.quantity = 'Enter quantity';
-        }
-
-        return errors;
-    };
-
     return (
         <div className="page-wrapper">
-            
             {showForm && (
                 <form className="form-container" onSubmit={handleSubmit}>
-                    <h3>Add Trade</h3>
-
+                    <h3>{selectedTrade ? "Edit Trade" : "Add Trade"}</h3>
                     <hr />
                     <div className="stock-info">
                         <div className="input-group">
-                        <label>
-                            <strong>Instrument</strong>
-                        </label>
-                        
-                        <input
-                            type="Text"
-                            name="instrument"
-                            value={formData.instrument}
-                            onChange={handleChange}
-                                maxLength={30}
-                                readOnly
-                        />
+                            <label><strong>Instrument</strong></label>
+                            <input type="text" name="instrument" value={formData.instrument} readOnly />
                         </div>
+
                         <div className="input-group">
-                        <label>
-                            <strong>Stock Name</strong>
-                        </label>
-                        <input
-                            type="Text"
-                            name="stockName"
-                            value={formData.stockName}
-                            onChange={handleChange}
-                            maxLength={30}
-                            />
+                            <label><strong>Stock Name</strong></label>
+                            <input type="text" name="stockName" value={formData.stockName} onChange={handleChange} />
+                            {errors.stockName && <span className="error-message">{errors.stockName}</span>}
                         </div>
-                        {errors.stockName && (
-                            <span className="error-message">
-                                {errors.stockName}
-                            </span>
-                        )}
+
                         <div className="input-group">
-                        <label>
-                            <strong>Date</strong>
-                        </label>
-                        <input
-                            type="date"
-                                name="date"
-                                value={date}
-                            onChange={handleChange}
-                            maxLength={30}
-                            />
+                            <label><strong>Date</strong></label>
+                            <input type="date" name="date" value={formData.date} onChange={handleChange} />
+                            {errors.date && <span className="error-message">{errors.date}</span>}
                         </div>
-                        {errors.date && (
-                            <span className="error-message">
-                                {errors.date}
-                            </span>
-                        )}
+
                         <div className="input-group">
                             <label><strong>Trade Type</strong></label>
                             <div className="radio-options">
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="tradeType"
-                                        value="Buy"
-                                        checked={formData.tradeType === "Buy"}
-                                        onChange={handleChange}
-                                    />
-                                    Buy
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="tradeType"
-                                        value="Sell"
-                                        checked={formData.tradeType === "Sell"}
-                                        onChange={handleChange}
-                                    />
-                                    Sell
-                                </label>
+                                {["Buy", "Sell"].map((type) => (
+                                    <label key={type}>
+                                        <input
+                                            type="radio"
+                                            name="tradeType"
+                                            value={type}
+                                            checked={formData.tradeType === type}
+                                            onChange={handleChange}
+                                        />
+                                        {type}
+                                    </label>
+                                ))}
                             </div>
                         </div>
                     </div>
+
                     <div className="stockprice-info">
                         <div className="input-group">
-                        <label>
-                            <strong>Entry Price</strong>
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="entryPrice"
-                            value={formData.entryPrice}
-                            onChange={handleChange}
-                            
+                            <label><strong>Entry Price</strong></label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="entryPrice"
+                                value={formData.entryPrice}
+                                onChange={handleChange}
                             />
+                            {errors.entryPrice && <span className="error-message">{errors.entryPrice}</span>}
                         </div>
-                        {errors.entryPrice && (
-                            <span className="error-message">
-                                {errors.entryPrice}
-                            </span>
-                        )}
+
                         <div className="input-group">
-                        <label>
-                            <strong>Exit Price</strong>
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="exitPrice"
-                            value={formData.exitPrice}
-                            onChange={handleChange}
-                            
+                            <label><strong>Exit Price</strong></label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="exitPrice"
+                                value={formData.exitPrice}
+                                onChange={handleChange}
                             />
+                            {errors.exitPrice && <span className="error-message">{errors.exitPrice}</span>}
                         </div>
-                        {errors.exitPrice && (
-                            <span className="error-message">
-                                {errors.exitPrice}
-                            </span>
-                        )}
+
                         <div className="input-group">
-                        <label>
-                            <strong>Quantity</strong>
-                        </label>
-                        <input
-                            type="number"
-                            name="quantity"
-                            value={formData.quantity}
-                            onChange={handleChange}
-                            
+                            <label><strong>Quantity</strong></label>
+                            <input
+                                type="number"
+                                name="quantity"
+                                value={formData.quantity}
+                                onChange={handleChange}
                             />
+                            {errors.quantity && <span className="error-message">{errors.quantity}</span>}
                         </div>
-                        {errors.quantity && (
-                            <span className="error-message">
-                                {errors.quantity}
-                            </span>
-                        )}
                     </div>
 
-                        <div className="button-group">
-                        <button type="submit" className="btn-submit" > {selectedTrade ? "Update Trade" : "Add Trade"}</button>
-                        <PopupWindow
-                            show={popupVisible}
-                            message={popupMessage}
-                            onClose={() => setPopupVisible(false)}
-                        />
-                            <button type="button" className="btn-cancel" onClick={() => {
+                    <div className="button-group">
+                        <button type="submit" className="btn-submit">
+                            {selectedTrade ? "Update Trade" : "Add Trade"}
+                        </button>
+
+                        <button
+                            type="button"
+                            className="btn-cancel"
+                            onClick={() => {
                                 resetForm();
                                 setShowForm(false);
-                            }}>Cancel</button>
-                        </div>
-                    
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </form>
-                
             )}
 
-
+            {/* Keep PopupWindow outside the form for clean UI */}
+            <PopupWindow
+                show={popupVisible}
+                message={popupMessage}
+                onClose={() => setPopupVisible(false)}
+            />
         </div>
-       
     );
+    
     
 }
