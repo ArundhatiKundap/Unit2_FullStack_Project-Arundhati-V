@@ -5,7 +5,8 @@
     align-items: center;
     padding: 16px;
     background-color: transparent;
-    color: red;
+    /*color: red;*/
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
 /* Container for logo and title */
@@ -13,7 +14,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: transparent
+    background-color: whitesmoke;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
 /* Logo image styling */
@@ -21,6 +23,8 @@
     width: 100px;
     height: 100px;
     object-fit: contain;
+    background-color: black;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
 /* Title next to the logo */

@@ -1,4 +1,4 @@
-.background-container {
+/*.background-container {
     background-image: url('./assets/backroundImage.jpg');
     background-size: cover;
     background-position: center;
@@ -7,7 +7,14 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-}
+} */
+
+.background-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 15px;
+} 
+
 
 .page-wrapper {
     /* flex: 1;  Takes available space below navbar */

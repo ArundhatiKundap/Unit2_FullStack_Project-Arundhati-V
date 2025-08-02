@@ -55,8 +55,8 @@ export default function Home() {
         <>
             <div className="animation-container">
                 <div className="animator-class">
-                    <h1>STOCK TRADING JOURNAL</h1>
-                    <h2>key to success</h2>
+                    <h1>TRADING JOURNAL</h1>
+                    <h2>Plan to Success</h2>
 
                     <Paper
                         square

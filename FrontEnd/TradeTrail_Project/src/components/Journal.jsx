@@ -75,44 +75,58 @@ export default function Journal({ trades }) {
         },
     };
 
-
+    const [expandedCardIndex, setExpandedCardIndex] = useState(null);
     return(
     <div className="row-container">
         <div className="trade-table-container">
                 {filteredTrades.length === 0 ? (
                     <p>No records to show for {formatDate(selectedDate)}</p>
                 ) : (
-                <table className="trade-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Stock</th>
-                            <th>Type</th>
-                            <th>Entry</th>
-                            <th>Exit</th>
-                            <th>Quantity</th>
-                            <th>Profit/Loss</th>
-                            <th>Win/Loss</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
+                   
+                   <div className="trade-cards">
+                      <h3>{formatDate(selectedDate)}</h3>
+                      
                         {filteredTrades.map((trade, index) => (
-                            <tr key={index}>
-                                <td>{trade.tradeDate}</td>
-                                <td>{trade.stockName}</td>
-                                <td>{trade.tradeType}</td>
-                                <td>{trade.entryPrice}</td>
-                                <td>{trade.exitPrice}</td>
-                                <td>{trade.quantity}</td>
-                                <td>{trade.profitLoss}</td>
-                                <td>{trade.win ? 'Win' : 'Loss'}</td>
-                    
-                            </tr>
+                            
+                            <div className="selected-date-card" key={index}>    
+                                <div className="card-row">
+                                   <span><strong>Stock Name:</strong> {trade.stockName}</span>
+                                   <span><strong>Trade Type:</strong> {trade.tradeType}</span>
+                                </div> 
+                                <div className="card-row">
+                                    <span><strong>Profit/Loss:</strong> {trade.profitLoss}</span>
+                                    <span><strong>Result:</strong> {trade.win ? 'Win' : 'Loss'}</span>
+                                 </div>
+                                {/* Toggle Button */}
+                                <div className="toggle-details">
+                                    <button
+                                        onClick={() =>
+                                            setExpandedCardIndex(index === expandedCardIndex ? null : index)
+                                        }
+                                    >
+                                        {index === expandedCardIndex ? '▲ Hide Details' : '▼ Show Details'}
+                                    </button>
+                                </div>
+
+                                {/* Conditionally Rendered Details */}
+                                {index === expandedCardIndex && (
+                                    <div className="details-section">
+                                        <p><strong>Entry Price:</strong> {trade.entryPrice}</p>
+                                        <p><strong>Exit Price:</strong> {trade.exitPrice}</p>
+                                        <p><strong>Quantity:</strong> {trade.quantity}</p>
+                                    </div>
+                                 )}
+                            </div>
+                                  
                         ))}
-                    </tbody>
-                </table>
+ 
+                      
+
+                   </div> 
             )}
+        </div>
+        <div className="chart-container">
+            <Line data={chartData} options={chartOptions} />
         </div>
         <div className="calender-container">
                 <h2 className="text-xl font-bold mb-4">📅 Select a Date</h2>
@@ -125,10 +139,8 @@ export default function Journal({ trades }) {
                     return view === 'month' && (date.getDay() === 0 || date.getDay() === 6) // Disable weekends (Saturday = 6, Sunday = 0)      
                     }}
                 /> 
-            </div>
-            <div className="chart-container">
-                <Line data={chartData} options={chartOptions} />
-            </div>
+        </div>
+            
 
     </div>
     );

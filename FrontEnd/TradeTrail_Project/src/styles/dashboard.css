@@ -1,84 +1,119 @@
-.dashboard-container {
-    background-color: black;
+/*  .dashboard-container {
+    background-color: aliceblue;
     margin-top: 60px; /* Adjust to match header height */
-    display: flex;
+ /* display: flex;
     height: calc(100vh - 60px); /* fill remaining page height */
-}
+ 
+/*} 
 
 
 * {
     box-sizing: border-box
+} */
+
+.dashboard-container {
+    display: flex;
+    gap: 30px;
 }
 
-/* Style the tab */
 .vertical-tab {
     width: 200px;
-    background-color: #333;
+    background-color: #F0FFF0;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--box-shadow);
+    Honeydew height: calc(100vh - 120px);
+    position: sticky;
+    top: 90px;
+    transition: var(--transition);
     display: flex;
     flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-    /* Style the buttons that are used to open the tab content */
-.tablinks {
-    padding: 16px;
-    color: white;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
+
+.username {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-    .tablinks:hover,
-    .tablinks.active {
-        background-color: #575757;
+    .username.avatar {
+        width: 70px;
+        height: 70px;
+        background-color: lightblue;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 15px;
     }
 
-.tabcontent-container {
-    flex-grow: 1;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 2px solid #ccc; 
-    border-radius: 8px; 
-    margin: 10px; 
+.main-nav ul {
+    list-style: none;
+    padding: 0;
 }
 
+.main-nav li {
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+}
 
-.tabcontent-container {
+    .main-nav li i {
+        margin-right: 10px;
+    }
+
+    .main-nav li:hover,
+    .main-nav li.active {
+        background-color: #00cec9;
+    }
+
+    /* Style the buttons that are used to open the tab content */
+.main-content {
     flex-grow: 1;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    margin: 10px;
-    overflow-y: auto; /* allow scroll if content overflows */
+    padding: 30px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: aliceblue;
 }
 
 .dashboard-cards {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .card {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    flex: 1 1 200px;
-    min-width: 200px;
-    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
     .card h3 {
-        margin-bottom: 0.5rem;
-        color: #555;
+        margin: 0 0 10px;
     }
 
-    .card p {
-        font-size: 1.5rem;
-        font-weight: bold;
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+    .section-header h3 {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--primary-color);
     }
+
 .form-container {
     padding: 10px;
     background-color: white;
@@ -98,8 +133,8 @@
 .button-group {
     display: flex;
     gap: 10px;
-    justify-content: left;
     margin-top: 20px;
+    display: inline-flex;
 }
 
 
@@ -150,8 +185,11 @@ select {
     background-color: #dc3545;
 }
 
-.row-container{
-    display:flex;
+.row-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 .trade-table-container {
     overflow-x: auto;
@@ -188,6 +226,52 @@ select {
     .trade-table td {
         color: #444;
     }
+
+
+.trade-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.selected-date-card {
+    background-color: #e0f7fa; /* light cyan / baby blue */
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.card-row {
+    display: flex;   
+    margin-bottom: 10px;
+}
+
+    .card-row span {
+        width: 48%; /* leave space between columns */
+        font-size: 14px;
+        color: #333;
+    }
+.toggle-details {
+    text-align: center;
+    margin-top: 6px;
+}
+
+    .toggle-details button {
+        background: none;
+        border: none;
+        color: #007bff;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+.details-section {
+    background-color: #e9f7ef;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 14px;
+}
 
 .chart-container {
     overflow-x: auto;

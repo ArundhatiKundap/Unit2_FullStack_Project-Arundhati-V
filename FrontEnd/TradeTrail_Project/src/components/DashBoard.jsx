@@ -5,6 +5,7 @@ import Addtrade from './AddTrade';
 import ShowTrades from './ShowTrades';
 import Journal from './Journal';
 import Search from './SearchTrades';
+import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
  
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -16,7 +17,7 @@ export default function Dashboard() {
     const [trades, setTrades] = useState([]);
     const [popupVisible, setPopupVisible] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
-    
+    const navigate = useNavigate();
 
     if (!loggedInUser.email) {
         return <div>Please log in to view your dashboard.</div>;
@@ -42,6 +43,13 @@ export default function Dashboard() {
 
         setShowAddTrade(true);
         setShowTrades(true);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("loggedInUser");
+        navigate("/");
+        window.location.reload(); // refresh to re-trigger protected routes, etc.
     };
 
    
@@ -76,11 +84,15 @@ export default function Dashboard() {
             case 'dashboard':
                 return (         
                     <div className="tabcontent">
-                      
-                        <div className="button-group">
+
+                        <div className="section-header">
+                        
+                          <h3>Trades</h3>
+                          <div className="button-group">
                             <button className="btn-submit" onClick={handleAddTradeClick}>
                                 + Add Trade
                             </button>
+                          </div>
                         </div>
                         {showAddTrade && <Addtrade
                             key={formKey}
@@ -94,8 +106,7 @@ export default function Dashboard() {
                         />}
                     
                       <div className ="tradelist">
-                            <h3>Trades</h3>
-                            
+                           
                             {showTrades && <ShowTrades                       
                                 userEmail={loggedInUser.email}
                                 onEdit={handleEditTrade}
@@ -130,50 +141,71 @@ export default function Dashboard() {
     };
 
     const totalProfitLoss = trades.reduce((sum, t) => sum + Number(t.profitLoss), 0);
-    const totalWins = trades.filter(t => t.win).length;
-    const totalLosses = trades.filter(t => !t.win).length;
+    const totalWins = trades.filter(t => t.profitLoss > 0).length;
+    const totalLosses = trades.filter(t => t.profitLoss < 0).length;
     const totalTrades = trades.length;
-
-    
     const winPercentage = totalTrades > 0 ? Math.round((totalWins / totalTrades) * 100) : 0;
-
+   
     
     const grossProfit = trades.filter(t => t.profitLoss > 0).reduce((sum, t) => sum + Number(t.profitLoss), 0);
     const grossLoss = trades.filter(t => t.profitLoss < 0).reduce((sum, t) => sum + Math.abs(Number(t.profitLoss)), 0);
-    const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : 'N/A';
-
+    
+    const profitFactor = grossLoss > 0 ? parseFloat((grossProfit / grossLoss).toFixed(2)) : 0;
+   
 
     return (
         <>
-        <div className="username">
-                            <span><h2>Welcome {loggedInUser.name}</h2></span>
-                        </div>
-            <div className="dashboard-container">
+            < div className="dashboard-container">
                 
-              <div className="vertical-tab">
-                <button className="tablinks" onClick={() => handleTabChange('dashboard')}>Dashboard</button>
-                <button className="tablinks" onClick={() => handleTabChange('journal')}>Journal</button>
-                <button className="tablinks" onClick={() => handleTabChange('search')}>Search</button>
+                <div className="vertical-tab">
+                    <div className="username">
+                        <div className="avatar">
+                            <i className="fas fa-user"></i>
+                        </div>
+                        <h3>Welcome {loggedInUser.name}</h3>
+                    </div>
+                    <nav className="main-nav">
+                        <ul>
+                            <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}>
+                                <i className="fas fa-home"></i> Dashboard
+                            </li>
+                            <li className={activeTab === 'journal' ? 'active' : ''} onClick={() => handleTabChange('journal')}>
+                                <i className="fas fa-book"></i> Journal
+                            </li>
+                            <li className={activeTab === 'search' ? 'active' : ''} onClick={() => handleTabChange('search')}>
+                                <i className="fas fa-search"></i> Search
+                            </li>
+                            <li
+                                className={activeTab === 'logout' ? 'active' : ''} onClick={handleLogout}>                     
+                                <i className="fas fa-sign-out-alt"></i> Logout
+                            </li>                          
+                        </ul>
+                    </nav>
+                
               </div>
 
-                <div className="tabcontent-container">
+                <main className="main-content">
                     {trades.length > 0 && (
                         <div className="dashboard-cards">
                             <div className="card">
                                 <h3>Total P&L</h3>
                                 <p style={{ color: totalProfitLoss >= 0 ? 'green' : 'red' }}>
-                                    ₹{totalProfitLoss.toFixed(2)}
+                                    <strong>${totalProfitLoss.toFixed(2)}</strong>
                                 </p>
                             </div>
 
                             <div className="card">
                                 <h3>Win Percentage</h3>
-                                <p>{winPercentage}%</p>
+                                <p>
+                                    <strong>{winPercentage.toFixed(2)}%</strong>
+                                </p>
                             </div>
 
                             <div className="card">
                                 <h3>Profit Factor</h3>
-                                <p>{profitFactor}</p>
+                                <p>                                 
+                                    <strong>{profitFactor.toFixed(2)}</strong>
+                                </p>
                             </div>
                         </div>
                     )}
@@ -183,7 +215,7 @@ export default function Dashboard() {
                         message={popupMessage}
                         onClose={() => setPopupVisible(false)}
                     />
-              </div>
+              </main>
             </div>
         </>
     );
