@@ -158,7 +158,8 @@ export default function Signup() {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            maxLength={30}
+                           maxLength={30}
+                         required
                         />
                         {errors.email && (
                         <span className="error-message">
@@ -175,7 +176,8 @@ export default function Signup() {
                             value={formData.password}
                             onChange={handleChange}
                             minLength={8}
-                            maxLength={30}
+                        maxLength={30}
+                        required
                         />
                         {errors.password && (
                         <span className="error-message">
@@ -191,7 +193,8 @@ export default function Signup() {
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleChange}
-                            maxLength={30}
+                        maxLength={30}
+                        required
                         />
                         {errors.confirmPassword && (
                         <span className="error-message">

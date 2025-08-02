@@ -26,23 +26,22 @@ export default function Dashboard() {
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         setShowAddTrade(false); // Hide form when switching tabs
-        if (tab === "dashboard") {
-         
+        if (tab === "dashboard") {        
             setShowTrades(true);
         }
     };
     const handleAddTradeClick = () => {
-        setFormKey((prev) => prev + 1); // Force remount
+
         setSelectedTrade(null); // clear previous edit
         setShowAddTrade(true);
         setShowTrades(true);
+       
     };
-    const handleEditTrade = (trade) => {
-        setFormKey((prev) => prev + 1);
+    const handleEditTrade = (trade) => {  
         setSelectedTrade(trade);
-
         setShowAddTrade(true);
         setShowTrades(true);
+       
     };
 
     const handleLogout = () => {
@@ -69,10 +68,11 @@ export default function Dashboard() {
             if (!response.ok) {
                 throw new Error("Failed to delete the trade.");
             }
-
             setPopupMessage("Trade deleted successfully.");
             setPopupVisible(true);
-            setFormKey((prev) => prev + 1); // Refresh trade list
+            setShowTrades(true);           
+           setFormKey((prev) => prev + 1); // Refresh trade list
+
         } catch (error) {
             setPopupMessage("There was an error deleting the trade.");
             setPopupVisible(true);
@@ -95,24 +95,23 @@ export default function Dashboard() {
                           </div>
                         </div>
                         {showAddTrade && <Addtrade
-                            key={formKey}
-                            userEmail={loggedInUser.email}
+                            refreshKey={formKey}                           
                             selectedTrade={selectedTrade}
-                            onSubmitSuccess={() => {
-                              
-                            setFormKey((prev) => prev + 1); // Refresh ShowTrades
+                            onSubmitSuccess={() => {                                    
+                                setFormKey((prev) => prev + 1); // Refresh ShowTrades
+                         
                             }}
+                            
                             
                         />}
                     
                       <div className ="tradelist">
                            
-                            {showTrades && <ShowTrades                       
-                                userEmail={loggedInUser.email}
+                            {showTrades && <ShowTrades                           
                                 onEdit={handleEditTrade}
                                 onDelete={handleDeleteTrade}
                                 onTradesFetched={setTrades}
-                                refreshKey={formKey}     // refresh trigger
+                               refreshKey={formKey}     // refresh trigger
                             />}
                       </div>
                     </div>  

@@ -15,7 +15,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 import '../styles/dashboard.css';
 
-export default function ShowTrades({ userEmail, onEdit, onDelete, refreshKey, onTradesFetched }) {
+export default function ShowTrades({ onEdit, onDelete, refreshKey, onTradesFetched }) {
     const [trades, setTrades] = useState([]);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export default function ShowTrades({ userEmail, onEdit, onDelete, refreshKey, on
         };
 
         fetchTrades(); 
-    }, [userEmail, refreshKey]);
+    }, [refreshKey]);
 
     const [popupVisible, setPopupVisible] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
@@ -116,8 +116,10 @@ export default function ShowTrades({ userEmail, onEdit, onDelete, refreshKey, on
                                 <td>{trade.profitLoss}</td>
                                 <td>{trade.profitLoss >0 ? 'Win' : 'Loss'}</td>
                                 <td>
-                                    <button onClick={() => onEdit(trade)}>Edit</button>
-                                    <button onClick={() => onDelete(trade.id)}>Delete</button>
+                                   <div className = "button-group">
+                                      <button onClick={() => onEdit(trade)}><i className='fas fa-edit'></i></button>
+                                      <button onClick={() => onDelete(trade.id)}><i className='far fa-trash-alt'></i></button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

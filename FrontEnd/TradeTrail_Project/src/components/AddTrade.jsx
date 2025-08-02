@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import '../styles/dashboard.css';
 import PopupWindow from "./PopupWindow";
-export default function Addtrade({selectedTrade, onSubmitSuccess }) {
+export default function Addtrade({ selectedTrade, onSubmitSuccess, refreshKey }) {
 
 
     const [showForm, setShowForm] = useState(true);
@@ -26,27 +26,21 @@ export default function Addtrade({selectedTrade, onSubmitSuccess }) {
     useEffect(() => {
         if (selectedTrade) {
             setFormData({
-                instrument: selectedTrade.instrument || "Stock",
-                tradeSpan: selectedTrade.tradeSpan || "Intraday",
-                stockName: selectedTrade.stockName || "",
-                tradeType: selectedTrade.tradeType || "Buy",
+                ...selectedTrade,
                 date: selectedTrade.tradeDate
                     ? new Date(selectedTrade.tradeDate).toISOString().slice(0, 10)
                     : "",
-                entryPrice: selectedTrade.entryPrice?.toString() || "",
-                exitPrice: selectedTrade.exitPrice?.toString() || "",
-                quantity: selectedTrade.quantity?.toString() || ""
             });
         } else {
             resetForm();
         }
-    }, [selectedTrade]);
+    }, [selectedTrade, refreshKey]);
     
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
 
@@ -62,6 +56,8 @@ export default function Addtrade({selectedTrade, onSubmitSuccess }) {
         return newErrors;
     };
 
+    const tradeDate = String(formData.date);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -75,14 +71,9 @@ export default function Addtrade({selectedTrade, onSubmitSuccess }) {
         }
 
         const tradeData = {
+            ...formData,
             ...(selectedTrade && { id: selectedTrade.id }),
-            tradeDate: formData.date,
-            stockName: formData.stockName,
-            entryPrice: parseFloat(formData.entryPrice),
-            exitPrice: parseFloat(formData.exitPrice),
-            tradeType: formData.tradeType,
-            quantity: parseInt(formData.quantity),
-            instrument: formData.instrument
+            tradeDate,
         };
 
         try {
@@ -101,18 +92,29 @@ export default function Addtrade({selectedTrade, onSubmitSuccess }) {
                 body: JSON.stringify(tradeData),
             });
 
-            if (!response.ok) throw new Error("Failed to save trade");
+            if (response.ok) {
+                setPopupMessage(selectedTrade ? "Trade Updated Successfully!" : "Trade Added Successfully");
+                setPopupVisible(true);
+                resetForm();
+                setShowForm(false);
+                onSubmitSuccess();
+            }
+            else {
+                setPopupMessage("Failed to save trade");
+                setPopupVisible(true);
 
-            setPopupMessage(selectedTrade ? "Trade Updated Successfully!" : "Trade Added Successfully");
-            setPopupVisible(true);
-            resetForm();
-            setShowForm(true);
-            onSubmitSuccess();
+            }
 
         } catch (err) {
             setPopupMessage("Error saving trade: " + err.message);
             setPopupVisible(true);
         } 
+        setPopupVisible(true);
+
+        // Auto-close after 3 seconds (optional)
+        setTimeout(() => {
+            setPopupVisible(false);
+        }, 3000);
     };
     
     const resetForm = () => {      

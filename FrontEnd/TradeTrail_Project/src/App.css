@@ -13,39 +13,43 @@
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 15px;
+    display: flex;
+    flex-direction: column;
 } 
 
 
 .page-wrapper {
-    /* flex: 1;  Takes available space below navbar */
-    display: flex;
+     flex: 1; /* Takes available space below navbar */
+   display: flex;
     justify-content: flex-end; /* Push content to right */
     align-items: center; /* Vertically center */
-    padding-right: 5%; /* Add some space from right edge */
+   padding-right: 5%; /* Add some space from right edge */
 }
 
-@media screen and (max-width: 900px) {
-    .page-wrapper {
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Vertically center */
-        padding: 20px;
+
+
+    @media screen and (max-width: 900px) {
+        .page-wrapper {
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Vertically center */
+            padding: 20px;
+        }
+
+        .background-container {
+            padding: 20px;
+            min-height: auto; /* Let height adjust */
+        }
     }
 
-    .background-container {
-        padding: 20px;
-        min-height: auto; /* Let height adjust */
-    }
-}
+    @media screen and (max-width: 600px) {
+        .page-wrapper {
+            justify-content: center; /* Center the form horizontally */
+            align-items: flex-start; /* Align to top */
+            padding: 20px; /* Add padding all around */
+        }
 
-@media screen and (max-width: 600px) {
-    .page-wrapper {
-        justify-content: center; /* Center the form horizontally */
-        align-items: flex-start; /* Align to top */
-        padding: 20px; /* Add padding all around */
+        .background-container {
+            padding: 10px; /* Optional: extra space around content on small screens */
+            min-height: auto;
+        }
     }
-
-    .background-container {
-        padding: 10px; /* Optional: extra space around content on small screens */
-        min-height: auto;
-    }
-}
