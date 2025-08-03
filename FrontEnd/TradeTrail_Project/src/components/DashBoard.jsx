@@ -71,12 +71,14 @@ export default function Dashboard() {
             setPopupMessage("Trade deleted successfully.");
             setPopupVisible(true);
             setShowTrades(true);           
-           setFormKey((prev) => prev + 1); // Refresh trade list
+            setFormKey((prev) => prev + 1); // Refresh trade list
+            
 
         } catch (error) {
             setPopupMessage("There was an error deleting the trade.");
             setPopupVisible(true);
         }
+        setShowAddTrade(false);
     };
 
     const renderTabContent = () => {
@@ -98,11 +100,9 @@ export default function Dashboard() {
                             refreshKey={formKey}                           
                             selectedTrade={selectedTrade}
                             onSubmitSuccess={() => {                                    
-                                setFormKey((prev) => prev + 1); // Refresh ShowTrades
-                         
-                            }}
-                            
-                            
+                                setFormKey((prev) => prev + 1);// Refresh ShowTrades
+                                setShowAddTrade(false);
+                            }}                                                                                        
                         />}
                     
                       <div className ="tradelist">
@@ -111,7 +111,8 @@ export default function Dashboard() {
                                 onEdit={handleEditTrade}
                                 onDelete={handleDeleteTrade}
                                 onTradesFetched={setTrades}
-                               refreshKey={formKey}     // refresh trigger
+                                refreshKey={formKey}     // refresh trigger
+                               
                             />}
                       </div>
                     </div>  
@@ -138,7 +139,7 @@ export default function Dashboard() {
                 );
         }
     };
-
+   
     const totalProfitLoss = trades.reduce((sum, t) => sum + Number(t.profitLoss), 0);
     const totalWins = trades.filter(t => t.profitLoss > 0).length;
     const totalLosses = trades.filter(t => t.profitLoss < 0).length;

@@ -94,8 +94,7 @@ export default function Addtrade({ selectedTrade, onSubmitSuccess, refreshKey })
 
             if (response.ok) {
                 setPopupMessage(selectedTrade ? "Trade Updated Successfully!" : "Trade Added Successfully");
-                setPopupVisible(true);
-                resetForm();
+                setPopupVisible(true);                      
                 setShowForm(false);
                 onSubmitSuccess();
             }
@@ -110,17 +109,16 @@ export default function Addtrade({ selectedTrade, onSubmitSuccess, refreshKey })
             setPopupVisible(true);
         } 
         setPopupVisible(true);
-
+        onSubmitSuccess();
         // Auto-close after 3 seconds (optional)
         setTimeout(() => {
             setPopupVisible(false);
         }, 3000);
     };
     
-    const resetForm = () => {      
+    const resetForm = () => {         
         setFormData({
-            instrument: "Stock",
-            tradeSpan: "Intraday",
+            instrument: "Stock",          
             stockName: "",
             tradeType: "Buy",
             date: "",
@@ -151,7 +149,27 @@ export default function Addtrade({ selectedTrade, onSubmitSuccess, refreshKey })
 
                         <div className="input-group">
                             <label><strong>Date</strong></label>
-                            <input type="date" name="date" value={formData.date} onChange={handleChange} />
+                            <input
+                                type="date"
+                                name="date"
+                                value={formData.date}
+                                onChange={handleChange}
+                                max={new Date().toISOString().split("T")[0]} // optional, if you want to disallow past dates
+                                onKeyDown={(e) => e.preventDefault()} // prevent manual typing
+                                onInput={(e) => {
+                                    const selectedDate = new Date(e.target.value);
+                                    const day = selectedDate.getDay();
+                              
+                                    if (                                    
+                                        day === 0 || // Sunday
+                                        day === 6    // Saturday
+                                    ) {
+                                        e.target.setCustomValidity("weekends are not allowed.");
+                                    } else {
+                                        e.target.setCustomValidity("");
+                                    }
+                                }}
+                            />
                             {errors.date && <span className="error-message">{errors.date}</span>}
                         </div>
 
@@ -222,6 +240,7 @@ export default function Addtrade({ selectedTrade, onSubmitSuccess, refreshKey })
                             onClick={() => {
                                 resetForm();
                                 setShowForm(false);
+                                onSubmitSuccess();
                             }}
                         >
                             Cancel
