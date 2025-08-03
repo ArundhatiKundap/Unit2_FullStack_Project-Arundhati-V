@@ -114,7 +114,12 @@ export default function ShowTrades({ onEdit, onDelete, refreshKey, onTradesFetch
                                 <td>{trade.exitPrice}</td>
                                 <td>{trade.quantity}</td>
                                 <td>{trade.profitLoss}</td>
-                                <td>{trade.profitLoss >0 ? 'Win' : 'Loss'}</td>
+                                <td style={{
+                                    color: trade.profitLoss > 0 ? 'green' : 'red',
+                                    fontWeight: 'bold'
+                                }}>
+                                    {trade.profitLoss > 0 ? 'Win' : 'Loss'}
+                                </td>
                                 <td>
                                    <div className = "button-group">
                                       <button onClick={() => onEdit(trade)}><i className='fas fa-edit'></i></button>

@@ -4,18 +4,19 @@
     justify-content: flex-start; /* aligns items to the left */
     align-items: center;
     padding: 16px;
-    background-color: transparent;
-    /*color: red;*/
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    background-color: aliceblue;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.07);
+    border: 4px solid var(--color-white); /* Add this line */
+    color: var(--color-text);
 }
 
 /* Container for logo and title */
 .logo-container {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background-color: whitesmoke;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    gap: 8px;
+    background-color: var(--color-white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Logo image styling */
@@ -23,7 +24,7 @@
     width: 100px;
     height: 100px;
     object-fit: contain;
-    background-color: black;
+    background-color: var(--color-primary);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
@@ -31,6 +32,13 @@
 .title {
     font-size: 50px;
     font-weight: 700;
+    color: cornflowerblue;
+    text-shadow: 2px 2px 4px rgba(100, 149, 237, 0.3), -2px -2px 4px rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.title:hover {
+    transform: scale(1.05);
 }
 
 .navbar-home {
@@ -45,17 +53,21 @@
     .navbar-home a {
         float: left;
         padding: 12px;
-        color: darkred;
+        color: var(--color-secondary);
         text-decoration: none;
         font-size: 17px;
+        border-radius: 4px;
+        transition: background 0.2s, color 0.2s;
     }
 
         .navbar-home a:hover {
-            background-color: #000;
+            background-color: var(--color-primary);
+            color: var(--color-white);
         }
 
 .active {
-    background-color: #04AA6D;
+    background-color: var(--color-accent);
+    color: var(--color-white);
 }
 
 .navbar-login {
@@ -65,7 +77,7 @@
 
 .menu-icon {
     background: none;
-    color: white;
+    color: var(--color-primary);
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
@@ -75,13 +87,14 @@
     position: absolute;
     top: 30px;
     right: 0;
-    background: white;
-    color: black;
-    border: 1px solid #ccc;
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: 1px solid var(--color-secondary);
     display: flex;
     flex-direction: column;
     padding: 10px;
     display: none;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.10);
 }
 
 .navbar-login:hover .dropdown {
@@ -95,7 +108,7 @@
     border: none;
     text-align: left;
     cursor: pointer;
-    color: black;
+    color: var(--color-primary);
 }
 
 @media screen and (max-width: 900px) {

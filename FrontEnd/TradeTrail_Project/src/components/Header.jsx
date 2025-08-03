@@ -13,7 +13,7 @@ export default function Header() {
         <header className="header">
             <div className="logo-container">
                 <img src={TradeTrai_logo} alt="TradeTrai logo" className="logo" />
-                <h1 className="title">Trade Trail</h1>
+                <h1 className="title">TradeTrail</h1>
             </div>
             {!isLoggedIn ? (
                 <div className="navbar-home">

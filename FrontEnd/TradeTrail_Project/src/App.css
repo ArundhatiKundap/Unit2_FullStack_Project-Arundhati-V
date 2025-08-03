@@ -21,7 +21,7 @@
 .page-wrapper {
      flex: 1; /* Takes available space below navbar */
    display: flex;
-    justify-content: flex-end; /* Push content to right */
+   justify-content: flex-end; /* Push content to right */
     align-items: center; /* Vertically center */
    padding-right: 5%; /* Add some space from right edge */
 }
