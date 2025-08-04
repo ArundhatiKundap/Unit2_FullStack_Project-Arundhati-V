@@ -50,12 +50,11 @@ public class TradePlan {
                 indicators.get("resistance")
 
         );
-        System.out.println(prompt);
+
 
         try {
             GenerateContentResponse response = geminiClient.models
                     .generateContent("gemini-1.5-flash", prompt, null);
-            System.out.println(response.text());
             return response.text();
         } catch (Exception e) {
             e.printStackTrace();
