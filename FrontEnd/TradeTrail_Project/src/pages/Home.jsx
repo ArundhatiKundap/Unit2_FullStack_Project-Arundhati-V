@@ -5,8 +5,7 @@ import {
     MobileStepper,
     useTheme,
 } from "@mui/material";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+
 import '../styles/home.css';
 export default function Home() {
     const animationImg = [
