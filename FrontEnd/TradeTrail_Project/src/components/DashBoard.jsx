@@ -81,7 +81,8 @@ export default function Dashboard() {
         }
         setShowAddTrade(false);
     };
-    const userRole = localStorage.getItem("role");
+    const userRole = loggedInUser.role;
+    console.log("role", userRole)
     const renderTabContent = () => {
         switch (activeTab) {
             case 'dashboard':
@@ -135,7 +136,7 @@ export default function Dashboard() {
             case 'analyse':
                 return (
                     <div className="tabcontent">
-                        <h3>Analyse</h3>
+                        <h3>AI Analysis</h3>
                         
                         {userRole === 'ROLE_PREMIUM' ? (
                             <Analyse />
@@ -191,7 +192,7 @@ export default function Dashboard() {
                                 <i className="fas fa-search"></i> Search
                             </li>
                             <li className={activeTab === 'analyse' ? 'active' : ''} onClick={() => handleTabChange('analyse')}>
-                                <i className="fas fa-robot"></i> Analyse
+                                <i className="fas fa-robot"></i> AI Analysis
                             </li>
                             <li
                                 className={activeTab === 'logout' ? 'active' : ''} onClick={handleLogout}>                     
