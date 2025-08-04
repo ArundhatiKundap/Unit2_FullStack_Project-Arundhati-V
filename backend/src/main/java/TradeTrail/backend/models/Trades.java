@@ -2,7 +2,6 @@ package TradeTrail.backend.models;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "trades")
@@ -15,7 +14,7 @@ public class Trades {
     private String instrument;
     private Double entryPrice;
     private Double exitPrice;
-    private String tradeDate;;
+    private String tradeDate;
     private String tradeType;
     private int quantity;
     private double profitLoss;
