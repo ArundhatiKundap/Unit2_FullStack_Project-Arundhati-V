@@ -5,6 +5,7 @@ import Addtrade from './AddTrade';
 import ShowTrades from './ShowTrades';
 import Journal from './Journal';
 import Search from './SearchTrades';
+import Analyse from './Analyse';
 import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
  
@@ -80,7 +81,7 @@ export default function Dashboard() {
         }
         setShowAddTrade(false);
     };
-
+    const userRole = localStorage.getItem("role");
     const renderTabContent = () => {
         switch (activeTab) {
             case 'dashboard':
@@ -131,6 +132,20 @@ export default function Dashboard() {
                         <Search trades={trades}/>
                     </div>
                 );
+            case 'analyse':
+                return (
+                    <div className="tabcontent">
+                        <h3>Analyse</h3>
+                        
+                        {userRole === 'ROLE_PREMIUM' ? (
+                            <Analyse />
+                        ) : (
+                            <p style={{ color: 'red', fontWeight: 'bold' }}>
+                                Access restricted. Subscribe to Premium to unlock this feature.
+                            </p>
+                        )}
+                    </div>
+                );
             default:
                 return (
                     <div className="tabcontent">
@@ -174,6 +189,9 @@ export default function Dashboard() {
                             </li>
                             <li className={activeTab === 'search' ? 'active' : ''} onClick={() => handleTabChange('search')}>
                                 <i className="fas fa-search"></i> Search
+                            </li>
+                            <li className={activeTab === 'analyse' ? 'active' : ''} onClick={() => handleTabChange('analyse')}>
+                                <i className="fas fa-robot"></i> Analyse
                             </li>
                             <li
                                 className={activeTab === 'logout' ? 'active' : ''} onClick={handleLogout}>                     
