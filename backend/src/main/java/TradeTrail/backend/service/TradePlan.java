@@ -51,7 +51,6 @@ public class TradePlan {
 
         );
 
-
         try {
             GenerateContentResponse response = geminiClient.models
                     .generateContent("gemini-1.5-flash", prompt, null);
