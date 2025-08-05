@@ -82,7 +82,7 @@ export default function Dashboard() {
         setShowAddTrade(false);
     };
     const userRole = loggedInUser.role;
-    console.log("role", userRole)
+    
     const renderTabContent = () => {
         switch (activeTab) {
             case 'dashboard':
