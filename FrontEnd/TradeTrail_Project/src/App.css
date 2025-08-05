@@ -1,14 +1,3 @@
-/*.background-container {
-    background-image: url('./assets/backroundImage.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-} */
-
 .background-container {
     max-width: 1600px;
     margin: 0 auto;
@@ -28,28 +17,27 @@
 
 
 
-    @media screen and (max-width: 900px) {
-        .page-wrapper {
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Vertically center */
-            padding: 20px;
-        }
-
-        .background-container {
-            padding: 20px;
-            min-height: auto; /* Let height adjust */
-        }
+@media screen and (max-width: 900px) {
+    .page-wrapper {
+        justify-content: center; /* Center content horizontally */
+        padding-right: 0; /* Remove right padding */
     }
 
-    @media screen and (max-width: 600px) {
-        .page-wrapper {
-            justify-content: center; /* Center the form horizontally */
-            align-items: flex-start; /* Align to top */
-            padding: 20px; /* Add padding all around */
-        }
-
-        .background-container {
-            padding: 10px; /* Optional: extra space around content on small screens */
-            min-height: auto;
-        }
+    .background-container {
+        padding: 0 10px; /* Slightly reduce padding */
     }
+}
+
+/* Small screens - mobile devices */
+@media screen and (max-width: 600px) {
+    .page-wrapper {
+        flex-direction: column; /* Stack content vertically */
+        align-items: stretch; /* Full width */
+        justify-content: center; /* Center vertically */
+        padding: 0 10px; /* Add horizontal padding */
+    }
+
+    .background-container {
+        padding: 0 8px; /* Even less padding */
+    }
+}
