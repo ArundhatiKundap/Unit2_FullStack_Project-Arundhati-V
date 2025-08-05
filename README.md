@@ -1,4 +1,4 @@
-README.md – 
+README.md 
 
 # Trading Journal 
 
@@ -79,3 +79,6 @@ Springboot Security
 - Localization & Internationalization: To make the journal accessible worldwide, interface translations and local currency/date support are planned.
 - Integration with Popular Trading Tools: Connecting with TradingView, ThinkOrSwim, and others for  
   chart embedding.
+
+
+
